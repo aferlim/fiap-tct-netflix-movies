@@ -38,3 +38,5 @@ EXPOSE 3000
 # Migrates the database, uploads staticfiles, run API server and background tasks
 # ENTRYPOINT [ "goreman" ]
 CMD [ "sh", "/opt/run.sh"]
+
+# CMD npm start

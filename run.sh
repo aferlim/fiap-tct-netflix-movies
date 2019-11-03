@@ -2,13 +2,21 @@
 
 set -m
 
-consul agent -bind $PRIVATE_IP_ADDRESS \
-    -advertise $PRIVATE_IP_ADDRESS \
+consul agent
     -join consul_server \
     -node $NODE \
     -dns-port 53 \
     -data-dir /data \
     -config-dir /etc/consul.d \
-    -enable-local-script-checks -D
+    -enable-local-script-checks
 
-npm start -D
+# consul agent -bind $PRIVATE_IP_ADDRESS \
+#     -advertise $PRIVATE_IP_ADDRESS \
+#     -join consul_server \
+#     -node $NODE \
+#     -dns-port 53 \
+#     -data-dir /data \
+#     -config-dir /etc/consul.d \
+#     -enable-local-script-checks
+
+npm start
