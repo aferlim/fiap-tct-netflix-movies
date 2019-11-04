@@ -10,7 +10,7 @@ const license = require('./license/index')
 
 const server = Hapi.server({
 	port: config.PORT,
-	host: 'localhost'
+	host: process.env.HOST || '0.0.0.0'
 })
 
 const start = async srv => {

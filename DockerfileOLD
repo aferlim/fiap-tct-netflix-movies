@@ -1,0 +1,47 @@
+FROM node:8
+MAINTAINER Andre Lima <aferlim@gmail.com>
+
+# This is the release of Consul to pull in.
+ENV CONSUL_VERSION=1.6.1
+
+RUN apt-get update && \
+    apt-get install -y \
+    bash curl nano net-tools zip unzip \
+    jq dnsutils iputils-ping
+
+# Setup Consul and Goreman
+RUN mkdir -p var/data /etc/consul.d
+
+ADD https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip /tmp/consul.zip
+RUN cd /bin && unzip /tmp/consul.zip && chmod +x /bin/consul && rm /tmp/consul.zip
+
+ADD https://github.com/mattn/goreman/releases/download/v0.0.10/goreman_linux_amd64.zip /tmp/goreman.zip
+RUN cd /bin && unzip /tmp/goreman.zip && chmod +x /bin/goreman && rm /tmp/goreman.zip
+
+
+ADD ./consul/config /etc/consul.d
+
+# RUN mkdir -p /home/node/rating/node_modules \
+#     && chown -R /home/node/rating
+
+WORKDIR /rating
+
+ADD package*.json ./
+RUN npm i
+
+ADD Procfile ./
+ADD ./src ./src/
+
+# Setting workdir
+ADD ./consul/consul.sh opt/
+ADD run.sh ./
+
+# USER node
+
+EXPOSE 8080
+
+# Migrates the database, uploads staticfiles, run API server and background tasks
+ENTRYPOINT [ "goreman" ]
+CMD ["-f", "Procfile", "start"]
+
+#CMD npm start

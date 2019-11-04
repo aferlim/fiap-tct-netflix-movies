@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:12-alpine
 MAINTAINER Andre Lima <aferlim@gmail.com>
 
 # This is the release of Consul to pull in.
@@ -8,7 +8,6 @@ RUN apk update && \
     apk add \
     bash curl nano net-tools zip unzip \
     jq iputils
-# jq iputils-ping dnsutils
 
 # Setup Consul and Goreman
 RUN mkdir -p var/data /etc/consul.d
@@ -16,8 +15,6 @@ RUN mkdir -p var/data /etc/consul.d
 ADD https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip /tmp/consul.zip
 RUN cd /bin && unzip /tmp/consul.zip && chmod +x /bin/consul && rm /tmp/consul.zip
 
-#ADD https://github.com/mattn/goreman/releases/download/v0.0.10/goreman_linux_amd64.zip /tmp/goreman.zip
-#RUN cd /bin && unzip /tmp/goreman.zip && chmod +x /bin/goreman && rm /tmp/goreman.zip
 
 ADD ./consul/config /etc/consul.d
 #ADD Procfile /root/Procfile
@@ -26,17 +23,14 @@ ADD ./consul/config /etc/consul.d
 ADD ./consul/consul.sh /opt
 ADD run.sh /opt
 
-ADD ./src rating/src/
-ADD package*.json rating/
 
-WORKDIR /rating
+WORKDIR /home/node/rating
 
+ADD package*.json ./
 RUN npm i
 
-EXPOSE 3000
+ADD ./src ./src/
 
-# Migrates the database, uploads staticfiles, run API server and background tasks
-# ENTRYPOINT [ "goreman" ]
-CMD [ "sh", "/opt/run.sh"]
+EXPOSE 8080
 
-# CMD npm start
+ENTRYPOINT [ "sh", "/opt/run.sh" ]

@@ -1,5 +1,5 @@
 # API
-api: /opt/run.sh
+api: /rating/run.sh
 
 # Consul Client Agent
-#consul: /opt/consul.sh
+#consul: /rating/consul.sh
