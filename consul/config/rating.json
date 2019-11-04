@@ -1,12 +1,12 @@
 {
   "service": {
     "name": "rating-api",
-    "port": 8000,
+    "port": 8080,
     "tags": ["web", "application", "urlprefix-/rating-api"],
     "check": {
       "id": "rating_api_status",
       "name": "Rating Api Status",
-      "tcp": "localhost:8000",
+      "tcp": "localhost:8080",
       "interval": "30s",
       "timeout": "20s"
     }
