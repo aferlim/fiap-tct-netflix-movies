@@ -2,18 +2,30 @@ const Hapi = require('@hapi/hapi')
 const Inert = require('@hapi/inert')
 const Vision = require('@hapi/vision')
 const HapiSwagger = require('hapi-swagger')
+var Kafka = require('no-kafka')
 
 const chalk = require('./chalk')
 const connect = require('./mongoClient')
-const config = require('./config')
-const license = require('./license/index')
+const {
+	PORT,
+	MONGO_CONNECTION_STRING,
+	KAFKA_CONNECTION_STRING
+} = require('./config')
+// const license = require('./license/index')
+const Rating = require('./rating')
 
 const server = Hapi.server({
-	port: config.PORT,
+	port: PORT,
 	host: process.env.HOST || '0.0.0.0'
 })
 
-const start = async srv => {
+const KafkaProducer = new Kafka.Producer({
+	connectionString: KAFKA_CONNECTION_STRING
+})
+
+const kafka = require('./kafka')(KafkaProducer)
+
+const Start = async srv => {
 	const swaggerOptions = {
 		info: {
 			title: 'Rate Movies API Documentation',
@@ -44,11 +56,11 @@ const startupError = err => {
 }
 
 connect(
-	config.MONGO_CONNECTION_STRING,
+	MONGO_CONNECTION_STRING,
 	chalk
 )
 	.then(() => {
-		start(server)
-		license(server)
+		Start(server)
+		Rating(server, kafka)
 	})
 	.catch(startupError)

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/index.js",
-    "nodemon": "MONGO_CONNECTION_STRING=mongodb://mongodb:27017/rating nodemon --inspect ./src/index.js"
+    "nodemon": "nodemon --inspect ./src/index.js"
   },
   "author": "Andre Naldo",
   "license": "ISC",
@@ -14,11 +14,14 @@
     "@hapi/hapi": "^18.3.2",
     "@hapi/inert": "^5.2.1",
     "@hapi/joi": "^15.1.1",
+    "@hapi/joi-date": "^2.0.1",
     "@hapi/vision": "^5.5.3",
     "chalk": "^2.4.2",
     "error-factory": "^0.1.6",
     "hapi-swagger": "^10.0.2",
-    "mongoose": "^5.7.7"
+    "moment-timezone": "^0.5.27",
+    "mongoose": "^5.7.7",
+    "no-kafka": "^3.4.3"
   },
   "devDependencies": {
     "eslint": "^6.2.2",
