@@ -2,13 +2,6 @@ const Joi = require('@hapi/joi')
 
 const { Create, GetAll } = require('./rating')
 
-Joi.object().keys({
-	user: Joi.string().required(),
-	movieId: Joi.number().required(),
-	rate: Joi.number().required(),
-	date: Joi.date()
-})
-
 const Rating = (server, kafka) => {
 	server.route({
 		method: 'POST',

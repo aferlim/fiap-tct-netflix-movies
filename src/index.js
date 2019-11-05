@@ -11,7 +11,8 @@ const {
 	MONGO_CONNECTION_STRING,
 	KAFKA_CONNECTION_STRING
 } = require('./config')
-// const license = require('./license/index')
+
+const Home = require('./home')
 const Rating = require('./rating')
 
 const server = Hapi.server({
@@ -61,6 +62,9 @@ connect(
 )
 	.then(() => {
 		Start(server)
+
+		Home(server)
+
 		Rating(server, kafka)
 	})
 	.catch(startupError)

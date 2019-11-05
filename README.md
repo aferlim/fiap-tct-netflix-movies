@@ -5,3 +5,5 @@
 # Case Netflix
 
 # Rate Movies API
+
+Possibilidade de votar nos filmes que mais gostei.
