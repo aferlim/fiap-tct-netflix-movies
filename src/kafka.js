@@ -6,7 +6,7 @@ module.exports = producer => ({
 				return producer.send({
 					topic: topic,
 					partition: 0,
-					message: JSON.stringify(message)
+					message: { value: JSON.stringify(message) }
 				})
 			})
 			.then(function(result) {

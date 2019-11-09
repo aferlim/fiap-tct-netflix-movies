@@ -44,6 +44,7 @@ const Start = async srv => {
 	])
 
 	await srv.start()
+
 	chalk.info(`Server running on ${srv.info.uri}`)
 }
 
@@ -63,8 +64,8 @@ connect(
 	.then(() => {
 		Start(server)
 
-		Home(server)
-
 		Rating(server, kafka)
+
+		Home(server)
 	})
 	.catch(startupError)
