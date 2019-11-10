@@ -28,6 +28,10 @@ const conflict = res => {
 
 const success = res => res.response().code(200)
 
+const badGatewayWithMessage = (res, message) => {
+	return res.response(message).code(502)
+}
+
 module.exports = {
 	ok,
 	noContent,
@@ -36,5 +40,6 @@ module.exports = {
 	badRequestWithMessage,
 	created,
 	conflict,
-	success
+	success,
+	badGatewayWithMessage
 }
