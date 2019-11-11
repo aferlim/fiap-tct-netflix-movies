@@ -40,18 +40,29 @@ var CounterSchema = mongoose.Schema({
 	seq: { type: Number, default: 0 }
 })
 
-var counter = mongoose.model('counter', CounterSchema, 'movie_counter')
+var Counter = mongoose.model('counter', CounterSchema, 'counter')
 
 movieSchema.pre('save', function(next) {
 	var doc = this
-	counter.findByIdAndUpdate({ _id: 'entityId' }, { $inc: { seq: 1 } }, function(
-		error,
-		counter
-	) {
-		if (error) return next(error)
-		doc.movieId = counter.seq
-		next()
-	})
+	Counter.findByIdAndUpdate(
+		{ _id: 'movieId' },
+		{ $inc: { seq: 1 } },
+		{ upsert: true },
+		function(error, counter) {
+			if (error) return next(error)
+
+			if (!counter) {
+				Counter.create({ _id: 'movieId', seq: 1 }, function(err) {
+					if (err) return next(err)
+					// saved!
+					doc.movieId = 1
+				})
+			} else {
+				doc.movieId = counter.seq
+			}
+			next()
+		}
+	)
 })
 
 movieSchema.index({ movieId: 1 }, { unique: true })

@@ -1,7 +1,7 @@
 const errorFactory = require('error-factory')
 
 const Joi = require('@hapi/joi')
-const ValidationSchema = require('./validation_schema')
+const { Request } = require('./validation_schema')
 
 const Watch = require('./schema')
 
@@ -18,7 +18,7 @@ const WatchError = errorFactory('InvalidWatch', [
 ])
 
 const ValidateWatch = watch => {
-	const { error, value } = Joi.validate(watch, ValidationSchema)
+	const { error, value } = Joi.validate(watch, Request)
 
 	if (error) {
 		const { message, details, annotate } = error
@@ -48,7 +48,7 @@ const Update = async (watch, res) => {
 		console.log(error)
 
 		if (error instanceof WatchError) {
-			return badRequestWithMessage(res, 'Invalid create')
+			return badRequestWithMessage(res, `${error.message} - ${error._object}`)
 		} else {
 			return badGatewayWithMessage(res, 'badGateway')
 		}
@@ -56,7 +56,7 @@ const Update = async (watch, res) => {
 }
 
 const GetAll = res => {
-	return Watch.findAll({})
+	return Watch.find({})
 		.then(data => {
 			if (data.length <= 0) {
 				return notFound(res)

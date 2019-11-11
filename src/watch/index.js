@@ -2,8 +2,7 @@ const Joi = require('@hapi/joi')
 
 const { Update, GetAll, GetByUser } = require('./watch')
 
-const MovieSchema = require('../movies/validation_schema')
-const WatchedSchema = require('./validation_schema')
+const { Request, Response } = require('./validation_schema')
 
 const Watch = (server, kafka) => {
 	server.route({
@@ -17,27 +16,13 @@ const Watch = (server, kafka) => {
 			notes: ['201', '500'],
 			tags: ['movie', 'watch'],
 			validate: {
-				payload: {
-					movieId: Joi.number()
-						.required()
-						.description('the movie id'),
-					user: Joi.string()
-						.required()
-						.description('the user name')
-				}
+				payload: Request
 			},
 			response: {
 				status: {
-					201: {
-						description: 'Create successful'
-					},
-					400: {
-						description: 'Something wrong happened in validation',
-						schema: Joi.string().label('message')
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					201: {},
+					400: Joi.string().label('Bad Request'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}
@@ -50,24 +35,15 @@ const Watch = (server, kafka) => {
 		options: {
 			description: 'Gets all watches',
 			notes: 'Gets all the watches',
-			tags: ['movie', 'all watches'],
+			tags: ['api', 'movie', 'all watches'],
 			response: {
+				schema: Joi.array()
+					.items(Response)
+					.label('Watches'),
+				failAction: 'ignore',
 				status: {
-					200: {
-						description: 'Success',
-						schema: Joi.array()
-							.items({
-								...WatchedSchema,
-								movie: MovieSchema
-							})
-							.label('Movies Watched')
-					},
-					404: {
-						description: 'Not Found'
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					404: Joi.string().label('Not Found'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}
@@ -80,7 +56,7 @@ const Watch = (server, kafka) => {
 		options: {
 			description: 'Gets watches by user',
 			notes: 'Returns watches by user',
-			tags: ['movie', 'watches', 'user'],
+			tags: ['api', 'movie', 'watches', 'user'],
 			validate: {
 				params: {
 					user: Joi.string()
@@ -89,22 +65,13 @@ const Watch = (server, kafka) => {
 				}
 			},
 			response: {
+				schema: Joi.array()
+					.items(Response)
+					.label('Watches'),
+				failAction: 'ignore',
 				status: {
-					200: {
-						description: 'Success',
-						schema: Joi.array()
-							.items({
-								...WatchedSchema,
-								movie: MovieSchema
-							})
-							.label('Movies Watched')
-					},
-					404: {
-						description: 'Not Found'
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					404: Joi.string().label('Not Found'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}

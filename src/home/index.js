@@ -5,11 +5,6 @@ const Home = server => {
 		handler: () => {
 			return { hello: 'world' }
 		}
-		// options: {
-		// 	description: 'Rate Index',
-		// 	notes: '',
-		// 	tags: ['index', 'api']
-		// }
 	})
 }
 

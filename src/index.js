@@ -8,14 +8,15 @@ const connect = require('./mongoClient')
 const { PORT, MONGO_CONNECTION_STRING } = require('./config')
 
 const Home = require('./home')
-const Movies = require('./movies')
+const Movie = require('./movies')
+const Watch = require('./watch')
 
-const server = Hapi.server({
-	port: PORT,
-	host: process.env.HOST || '0.0.0.0'
-})
+const Start = async () => {
+	const server = await new Hapi.server({
+		port: PORT,
+		host: process.env.HOST || '0.0.0.0'
+	})
 
-const Start = async srv => {
 	const swaggerOptions = {
 		info: {
 			title: 'Movies API Documentation',
@@ -32,9 +33,14 @@ const Start = async srv => {
 		}
 	])
 
-	await srv.start()
+	try {
+		await server.start()
+		chalk.info(`Server running on ${server.info.uri}`)
+	} catch (error) {
+		chalk.info(error)
+	}
 
-	chalk.info(`Server running on ${srv.info.uri}`)
+	return server
 }
 
 process.on('unhandledRejection', err => {
@@ -50,11 +56,13 @@ connect(
 	MONGO_CONNECTION_STRING,
 	chalk
 )
-	.then(() => {
-		Start(server)
+	.then(async () => {
+		let srv = await Start()
 
-		Movies(server)
+		Home(srv)
 
-		Home(server)
+		Movie(srv)
+
+		Watch(srv)
 	})
 	.catch(startupError)

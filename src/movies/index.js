@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi')
-const MovieSchema = require('./validation_schema')
+const { Request, Response } = require('./validation_schema')
 
 const {
 	Create,
@@ -10,55 +10,26 @@ const {
 	UpdateRate
 } = require('./movie')
 
-const Movie = (server, kafka) => {
+const Movie = server => {
 	server.route({
 		method: 'POST',
 		path: '/movie',
 		handler: async (req, res) => {
-			return await Create(kafka)(req.payload, res)
+			return await Create(req.payload, res)
 		},
 		options: {
 			description: 'Creating a Movie',
 			notes: ['201', '500', '400'],
-			tags: ['movie'],
+			tags: ['api', 'movie'],
 			response: {
 				status: {
-					201: {
-						description: 'Create successful'
-					},
-					400: {
-						description: 'Something wrong happened in validation',
-						schema: Joi.string().label('message')
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					201: {},
+					400: Joi.string().label('Bad Request'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			},
 			validate: {
-				payload: {
-					movieId: Joi.number()
-						.required()
-						.description('the movie id'),
-					name: Joi.string()
-						.required()
-						.description('the movie name'),
-					description: Joi.string()
-						.required()
-						.description('the movie description'),
-					sinopse: Joi.string()
-						.required()
-						.description('the movie description'),
-					releaseYear: Joi.number()
-						.required()
-						.description('the movie release year'),
-					genre: Joi.string()
-						.required()
-						.description('the genre movie name'),
-					tags: Joi.array()
-						.items(Joi.string())
-						.description('Movie tags list')
-				}
+				payload: Request
 			}
 		}
 	})
@@ -70,22 +41,15 @@ const Movie = (server, kafka) => {
 		options: {
 			description: 'Gets all movies',
 			notes: 'Gets all the movies',
-			tags: ['movie', 'all movies'],
+			tags: ['api', 'movie', 'all movies'],
 			response: {
+				schema: Joi.array()
+					.items(Response)
+					.label('Movies'),
+				failAction: 'ignore',
 				status: {
-					200: {
-						description: 'Success',
-						schema: Joi.array()
-							.items(MovieSchema)
-							.label('Movies')
-					},
-					400: {
-						description: 'Something wrong happened in validation',
-						schema: Joi.string().label('error description')
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					400: Joi.string().label('Bad Request'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}
@@ -98,7 +62,7 @@ const Movie = (server, kafka) => {
 		options: {
 			description: 'Gets movies by tag',
 			notes: 'Returns movies by tag',
-			tags: ['movie', 'tags', 'tag'],
+			tags: ['api', 'movie', 'tags', 'tag'],
 			validate: {
 				params: {
 					tag: Joi.string()
@@ -107,19 +71,16 @@ const Movie = (server, kafka) => {
 				}
 			},
 			response: {
+				schema: Joi.array()
+					.items(Response)
+					.label('Movies'),
+				failAction: 'ignore',
 				status: {
-					200: {
-						description: 'Success',
-						schema: Joi.array()
-							.items(MovieSchema)
-							.label('Movies')
-					},
-					404: {
-						description: 'Not Found'
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					200: Joi.array()
+						.items(Response)
+						.label('Movies'),
+					404: Joi.string().label('Not Found'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}
@@ -132,7 +93,7 @@ const Movie = (server, kafka) => {
 		options: {
 			description: 'Gets movies by genre',
 			notes: 'Returns movies by genre',
-			tags: ['movie', 'genres', 'genre'],
+			tags: ['api', 'movie', 'genres', 'genre'],
 			validate: {
 				params: {
 					genre: Joi.string()
@@ -141,19 +102,13 @@ const Movie = (server, kafka) => {
 				}
 			},
 			response: {
+				schema: Joi.array()
+					.items(Response)
+					.label('Movies'),
+				failAction: 'ignore',
 				status: {
-					200: {
-						description: 'Success',
-						schema: Joi.array()
-							.items(MovieSchema)
-							.label('Movies')
-					},
-					404: {
-						description: 'Not Found'
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					404: Joi.string().label('Not Found'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}
@@ -166,7 +121,7 @@ const Movie = (server, kafka) => {
 		options: {
 			description: 'Gets most watched movies by genre',
 			notes: 'Returns most watched movies by genre',
-			tags: ['movie', 'genres', 'genre'],
+			tags: ['api', 'movie', 'genres', 'genre'],
 			validate: {
 				params: {
 					genre: Joi.string()
@@ -175,19 +130,13 @@ const Movie = (server, kafka) => {
 				}
 			},
 			response: {
+				schema: Joi.array()
+					.items(Response)
+					.label('Movies'),
+				failAction: 'ignore',
 				status: {
-					200: {
-						description: 'Success',
-						schema: Joi.array()
-							.items(MovieSchema)
-							.label('Movies')
-					},
-					404: {
-						description: 'Not Found'
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					404: Joi.string().label('Not Found'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}
@@ -202,7 +151,7 @@ const Movie = (server, kafka) => {
 		options: {
 			description: 'Rate the Movie',
 			notes: ['204', '502', '404'],
-			tags: ['movie', 'rate'],
+			tags: ['api', 'movie', 'rate'],
 			validate: {
 				payload: {
 					movieId: Joi.number()
@@ -220,15 +169,9 @@ const Movie = (server, kafka) => {
 			},
 			response: {
 				status: {
-					204: {
-						description: 'Success'
-					},
-					404: {
-						description: 'Not Found'
-					},
-					502: {
-						description: 'bad gateway'
-					}
+					204: Joi.string().label('Success'),
+					404: Joi.string().label('Not Found'),
+					502: Joi.string().label('Bad Gateway')
 				}
 			}
 		}

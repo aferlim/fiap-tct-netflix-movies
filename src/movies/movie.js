@@ -1,7 +1,7 @@
 const errorFactory = require('error-factory')
 
 const Joi = require('@hapi/joi')
-const ValidationSchema = require('./validation_schema')
+const { Request } = require('./validation_schema')
 
 const MomentBrazil = require('moment-timezone')
 
@@ -21,7 +21,7 @@ const MovieCreateError = errorFactory('InvalidMovie', [
 ])
 
 const ValidateMovie = movie => {
-	const { error, value } = Joi.validate(movie, ValidationSchema)
+	const { error, value } = Joi.validate(movie, Request)
 
 	if (error) {
 		const { message, details, annotate } = error
@@ -52,7 +52,7 @@ const Create = async (movie, res) => {
 		console.log(error)
 
 		if (error instanceof MovieCreateError) {
-			return badRequestWithMessage(res, 'Invalid create')
+			return badRequestWithMessage(res, `${error.message} - ${error._object}`)
 		} else {
 			return badGatewayWithMessage(res, 'badGateway')
 		}
@@ -60,7 +60,7 @@ const Create = async (movie, res) => {
 }
 
 const GetAll = res => {
-	return Movie.findAll({})
+	return Movie.find({})
 		.then(data => {
 			if (data.length <= 0) {
 				return notFound(res)
@@ -125,27 +125,27 @@ const UpdateRate = async (rate, res) => {
 	try {
 		let query = { movieId: rate.movieId, user: rate.user }
 
-		let rate = {}
+		let rateUp = {}
 
 		switch (rate.rate) {
 		case 1:
-			rate = { one: { $inc: 1 } }
+			rateUp = { one: { $inc: 1 } }
 			break
 		case 2:
-			rate = { two: { $inc: 1 } }
+			rateUp = { two: { $inc: 1 } }
 			break
 		case 3:
-			rate = { three: { $inc: 1 } }
+			rateUp = { three: { $inc: 1 } }
 			break
 		case 4:
-			rate = { four: { $inc: 1 } }
+			rateUp = { four: { $inc: 1 } }
 			break
 		default:
-			rate = { five: { $inc: 1 } }
+			rateUp = { five: { $inc: 1 } }
 			break
 		}
 
-		let up = { rate }
+		let up = { $set: { rateUp } }
 
 		let result = await Movie.findOneAndUpdate(query, up, { upsert: false })
 

@@ -1,5 +1,5 @@
 const ok = (res, data) => {
-	return res.response(data).code(200)
+	return res.response(data)
 }
 
 const noContent = res => {
