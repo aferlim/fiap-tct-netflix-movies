@@ -4,7 +4,7 @@ const movieSchema = mongoose.Schema({
 	movieId: {
 		type: Number,
 		required: true,
-		ref: 'movie'
+		ref: 'movies'
 	},
 	user: {
 		type: String,

@@ -20,7 +20,7 @@ const Watch = server => {
 			},
 			response: {
 				status: {
-					201: {},
+					204: {},
 					400: Joi.string().label('Bad Request'),
 					502: Joi.string().label('Bad Gateway')
 				}

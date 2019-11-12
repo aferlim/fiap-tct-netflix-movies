@@ -61,24 +61,26 @@ const Update = async (watch, res) => {
 	}
 }
 
-const GetAll = res => {
-	return Watch.find({})
-		.then(data => {
-			if (data.length <= 0) {
-				return notFound(res)
-			}
+const GetAll = async res => {
+	try {
+		var result = await Watch.find({})
 
-			return ok(res, data)
-		})
-		.catch(err => {
-			console.log(err)
-			return badGatewayWithMessage(res, 'badGateway')
-		})
+		await result.populate('movies').execPopulate()
+
+		if (result.length <= 0) {
+			return notFound(res)
+		}
+
+		return ok(res, result)
+	} catch (error) {
+		console.log(error)
+		return badGatewayWithMessage(res, 'badGateway')
+	}
 }
 
 const GetByUser = (res, user) => {
 	return Watch.find({ user: user })
-		.populate('movie')
+		.populate('movies')
 		.then(data => ok(res, data))
 		.catch(err => {
 			console.log(err)
