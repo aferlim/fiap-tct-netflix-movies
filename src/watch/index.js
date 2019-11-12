@@ -4,17 +4,17 @@ const { Update, GetAll, GetByUser } = require('./watch')
 
 const { Request, Response } = require('./validation_schema')
 
-const Watch = (server, kafka) => {
+const Watch = server => {
 	server.route({
 		method: 'PUT',
 		path: '/watch',
 		handler: async (req, res) => {
-			return await Update(kafka)(req.payload, res)
+			return await Update(req.payload, res)
 		},
 		options: {
 			description: 'Watch a Movie',
 			notes: ['201', '500'],
-			tags: ['movie', 'watch'],
+			tags: ['api', 'watch'],
 			validate: {
 				payload: Request
 			},

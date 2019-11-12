@@ -5,8 +5,11 @@ const { Request } = require('./validation_schema')
 
 const Watch = require('./schema')
 
+//Deveria ser por domain notification, mas estamos sem tempo
+const Movie = require('../movies/schema')
+
 const {
-	created,
+	noContent,
 	ok,
 	badRequestWithMessage,
 	badGatewayWithMessage,
@@ -35,15 +38,18 @@ const Update = async (watch, res) => {
 		let valid = ValidateWatch(watch)
 
 		let query = { movieId: watch.movieId, user: watch.user }
-		let up = { watches: { $inc: 1 } }
+		let up = { $inc: { watches: 1 } }
 		let options = { upsert: true }
 
 		let result = await Watch.findOneAndUpdate(query, up, options)
-
-		console.log(valid)
 		console.log(result)
 
-		return created(res)
+		result = await Movie.findOneAndUpdate({ movieId: watch.movieId }, up)
+		console.log(result)
+
+		console.log(valid)
+
+		return noContent(res)
 	} catch (error) {
 		console.log(error)
 

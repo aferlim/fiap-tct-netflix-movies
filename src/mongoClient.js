@@ -14,6 +14,7 @@ const mongoOpts = {
 const connectWihMongoose = async (MONGO_CONNECTION_STRING, console) => {
 	mongoose.Promise = global.Promise
 	mongoose.set('useCreateIndex', true)
+	mongoose.set('useFindAndModify', false)
 
 	mongoose.connection.on('connected', () => {
 		console.info(`🎉 mongoose connected on: ${MONGO_CONNECTION_STRING}`)

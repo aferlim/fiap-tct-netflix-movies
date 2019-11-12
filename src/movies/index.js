@@ -58,7 +58,7 @@ const Movie = server => {
 	server.route({
 		method: 'GET',
 		path: '/movie/getByTag/{tag}',
-		handler: (req, res) => GetByTag(res, req.params.g),
+		handler: (req, res) => GetByTag(res, req.params.tag),
 		options: {
 			description: 'Gets movies by tag',
 			notes: 'Returns movies by tag',
